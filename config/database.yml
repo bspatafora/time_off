@@ -1,0 +1,20 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+
+development:
+  <<: *default
+  database: time_off_development
+  host: localhost
+
+test:
+  <<: *default
+  database: time_off_test
+  host: localhost
+
+production:
+  <<: *default
+  database: time_off_production
+  username: time_off
+  password: <%= ENV['TIME_OFF_DATABASE_PASSWORD'] %>
