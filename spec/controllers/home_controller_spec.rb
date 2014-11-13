@@ -2,11 +2,11 @@ require 'rails_helper'
 
 describe HomeController, :type => :controller do
   context 'when user is logged in' do
-    it 'sets @token to the user’s token' do
-      session[:token] = 'token'
+    it 'sets @email to the user’s email' do
+      session[:email] = 'email'
 
       get :index
-      expect(assigns(:token)).to eq('token')
+      expect(assigns(:email)).to eq('email')
     end
   end
 

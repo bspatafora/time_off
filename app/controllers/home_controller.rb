@@ -1,7 +1,7 @@
 class HomeController < ApplicationController
   def index
-    if session[:token]
-      @token = session[:token]
+    if session[:email]
+      @email = session[:email]
     else
       redirect_to '/auth/google_oauth2'
     end
