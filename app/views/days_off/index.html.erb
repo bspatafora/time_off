@@ -9,7 +9,7 @@
 <form action=<%= home_path %> method="post">
   <input type="hidden" name="email" value=<%= @email %>>
   <label for="datepicker">Date</label>
-  <input type="text" name="date" id="datepicker" readonly="readonly">
+  <input type="text" name="date" id="datepicker" readonly="readonly" required>
   <label for="category">Category</label>
   <select name="category" id="category">
     <option value="Sick">Sick</option>
