@@ -14,7 +14,4 @@ test:
   host: localhost
 
 production:
-  <<: *default
-  database: time_off_production
-  username: time_off
-  password: <%= ENV['TIME_OFF_DATABASE_PASSWORD'] %>
+  url: <%= ENV['DATABASE_URL'] %>
