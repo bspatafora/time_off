@@ -2,8 +2,6 @@ require 'memory_repository/user'
 require 'repository'
 
 class SessionsController < ApplicationController
-  layout false
- 
   def create
     authorization = request.env['omniauth.auth']
     email = authorization[:info][:email]

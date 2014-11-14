@@ -1,10 +1,8 @@
-require 'rails_helper'
-
 describe SessionsController, :type => :controller do
   before do
     Repository.register(:user, MemoryRepository::UserRepository.new)
     @email, @token, @token_expiration = 'email', 'token', 'token_expiration'
-    @authorization_hash = {
+    @authorization = {
       info: { email: @email },
       credentials: { token: @token, expires_at: @token_expiration }
     }
@@ -12,7 +10,7 @@ describe SessionsController, :type => :controller do
 
   describe '#create' do
     it 'stores the email, token, and token expiration in the user’s session' do
-      request.env['omniauth.auth'] = @authorization_hash
+      request.env['omniauth.auth'] = @authorization
 
       post :create, :provider => 'provider'
       expect(session[:email]).to eq(@email)
@@ -21,7 +19,7 @@ describe SessionsController, :type => :controller do
     end
 
     it 'redirects to home' do
-      request.env['omniauth.auth'] = @authorization_hash
+      request.env['omniauth.auth'] = @authorization
 
       post :create, :provider => 'provider'
       expect(response).to redirect_to(home_path)
@@ -30,9 +28,9 @@ describe SessionsController, :type => :controller do
     context 'when a user grants consent for the first time' do
       it 'stores the email and refresh token in a repository' do
         refresh_token = 'refresh_token'
-        authorization_hash_with_refresh = @authorization_hash.dup
-        authorization_hash_with_refresh[:credentials][:refresh_token] = refresh_token
-        request.env['omniauth.auth'] = authorization_hash_with_refresh
+        authorization_with_refresh = @authorization.dup
+        authorization_with_refresh[:credentials][:refresh_token] = refresh_token
+        request.env['omniauth.auth'] = authorization_with_refresh
 
         post :create, :provider => 'provider'
         stored_user = Repository.for(:user).find_by_email('email')
