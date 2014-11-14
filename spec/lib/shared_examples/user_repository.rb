@@ -4,8 +4,7 @@ shared_examples 'a user repository' do
   describe '#save and #find_by_email' do
     it 'saves users and finds them by email' do
       user_repository = described_class.new
-      email = 'test@email.com'
-      refresh_token = 'refresh_token'
+      email, refresh_token = 'test@email.com', 'refresh_token'
 
       user_repository.save(MemoryRepository::User.new(email: email, refresh_token: refresh_token))
       user = user_repository.find_by_email('test@email.com')
