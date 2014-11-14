@@ -4,7 +4,11 @@
   * PostgreSQL
 
 ## Setup
-  1.  Set `TIME_OFF_CLIENT_ID` and `TIME_OFF_CLIENT_SECRET` shell variables
+  1.  Set shell variables
+    * `TIME_OFF_CLIENT_ID`
+    * `TIME_OFF_CLIENT_SECRET`
+    * `TIME_OFF_SECRET_DEVELOPMENT`
+    * `TIME_OFF_SECRET_TEST`
   2. `bundle install`
   3. `rake db:create`
   4. `rake db:migrate`
