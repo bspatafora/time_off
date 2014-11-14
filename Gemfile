@@ -17,5 +17,6 @@ gem 'omniauth', '~> 1.0'
 gem 'omniauth-google-oauth2'
 
 group :development, :test do
+  gem 'rake'
   gem 'rspec-rails', '~> 3.0.0'
 end
