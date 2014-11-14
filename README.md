@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/bspatafora/time_off.svg?branch=master)](https://travis-ci.org/bspatafora/time_off)
+
 # Time Off
 
 ## Requirements
