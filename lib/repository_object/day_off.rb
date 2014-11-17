@@ -1,4 +1,4 @@
-module MemoryRepository
+module RepositoryObject
   class DayOff
     attr_reader :email, :date, :category
 

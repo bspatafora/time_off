@@ -1,10 +1,10 @@
-require 'memory_repository/user'
-require 'memory_repository/day_off'
+require 'repository_object/user'
+require 'repository_object/day_off'
 
 shared_examples 'a day off repository' do
   before do
-    @user = MemoryRepository::User
-    @day_off = MemoryRepository::DayOff
+    @user = RepositoryObject::User
+    @day_off = RepositoryObject::DayOff
   end
 
   def user_repository

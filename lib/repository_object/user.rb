@@ -1,4 +1,4 @@
-module MemoryRepository
+module RepositoryObject
   class User
     attr_reader :email, :refresh_token
 

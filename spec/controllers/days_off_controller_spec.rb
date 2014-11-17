@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe DaysOffController, :type => :controller do
   before do
-    @day_off = MemoryRepository::DayOff
+    @day_off = RepositoryObject::DayOff
     Repository.register(:days_off, MemoryRepository::DayOffRepository.new)
   end
 

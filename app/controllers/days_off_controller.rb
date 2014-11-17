@@ -1,5 +1,5 @@
-require 'memory_repository/day_off'
 require 'repository'
+require 'repository_object/day_off'
 
 class DaysOffController < ApplicationController
   def index
@@ -12,7 +12,7 @@ class DaysOffController < ApplicationController
   end
 
   def create
-    day_off = MemoryRepository::DayOff.new(email: params[:email],
+    day_off = RepositoryObject::DayOff.new(email: params[:email],
                                            date: params[:date],
                                            category: params[:category])
     Repository.for(:days_off).save(day_off)

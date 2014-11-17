@@ -1,5 +1,5 @@
-require 'memory_repository/user'
 require 'repository'
+require 'repository_object/user'
 
 class SessionsController < ApplicationController
   def create
@@ -13,7 +13,7 @@ class SessionsController < ApplicationController
     session[:token_expiration] = token_expiration
 
     if authorization[:credentials].has_key? :refresh_token
-      user = MemoryRepository::User.new({ email: email,
+      user = RepositoryObject::User.new({ email: email,
                                           refresh_token: authorization[:credentials][:refresh_token] })
       Repository.for(:user).save(user)
     end
