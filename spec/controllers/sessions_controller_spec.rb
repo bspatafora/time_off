@@ -1,3 +1,5 @@
+require 'rails_helper'
+
 describe SessionsController, :type => :controller do
   before do
     Repository.register(:user, MemoryRepository::UserRepository.new)
