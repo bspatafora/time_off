@@ -1,6 +1,6 @@
 <h1>Days off for <%= @email %></h1>
 <ul>
-  <% @days_off.each do |day_off| %>
+  <% @days_off.list.each do |day_off| %>
     <li><%= day_off.date %> — <%= day_off.category %></li>
   <% end %>
 </ul>

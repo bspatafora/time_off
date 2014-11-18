@@ -1,11 +1,13 @@
 require 'repository'
 require 'repository_object/day_off'
+require 'presenter/days_off'
 
 class DaysOffController < ApplicationController
   def index
     if session[:email]
       @email = session[:email]
-      @days_off = Repository.for(:days_off).find_by_email(@email)
+      days_off = Repository.for(:days_off).find_by_email(@email)
+      @days_off = Presenter::DaysOff.new(days_off)
     else
       redirect_to '/auth/google_oauth2'
     end

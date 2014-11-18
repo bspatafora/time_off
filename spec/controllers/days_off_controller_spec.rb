@@ -8,7 +8,7 @@ describe DaysOffController, :type => :controller do
 
   describe '#index' do
     context 'when user is logged in' do
-      it 'sets @email and @days_off' do
+      it 'sets @email to the user’s email and @days_off to a presenter with their days off' do
         email = 'email'
         session[:email] = email
         days_off_repository = Repository.for(:days_off)
@@ -20,7 +20,7 @@ describe DaysOffController, :type => :controller do
 
         get :index
         expect(assigns(:email)).to eq(email)
-        expect(assigns(:days_off)).to eq(days_off)
+        expect(assigns(:days_off).list[0]).to eq(day_off)
       end
     end
 
