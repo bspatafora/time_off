@@ -1,9 +1,9 @@
-require 'repository'
+require 'service'
 
-describe Repository do
-  it 'registers and returns repositories' do
+describe Service do
+  it 'registers and returns services' do
     user_repository = 'user_repository'
-    Repository.register(:user, user_repository)
-    expect(Repository.for(:user)).to eq(user_repository)
+    Service.register(:user_repository, user_repository)
+    expect(Service.for(:user_repository)).to eq(user_repository)
   end
 end
