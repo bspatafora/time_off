@@ -15,6 +15,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'spring', group: :development
 gem 'omniauth', '~> 1.0'
 gem 'omniauth-google-oauth2'
+gem 'jquery-turbolinks'
 
 group :development, :test do
   gem 'rake'
