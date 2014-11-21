@@ -15,6 +15,9 @@ Bundler.require(*Rails.groups)
 
 module TimeOff
   class Application < Rails::Application
+    config.calendar_id = '8thlight.com_6tnab7jq6ch3ovua9n47iv6vqs%40group.calendar.google.com'
+    config.client_id = ENV['TIME_OFF_CLIENT_ID']
+    config.client_secret = ENV['TIME_OFF_CLIENT_SECRET']
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.

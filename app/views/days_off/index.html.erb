@@ -1,7 +1,7 @@
 <h1>Days off for <%= @email %></h1>
 <ul>
   <% @days_off.list.each do |day_off| %>
-    <li><%= day_off.date %> — <%= day_off.category %></li>
+    <li><a href=<%= day_off.url %>><%= day_off.date %></a> — <%= day_off.category %></li>
   <% end %>
 </ul>
 
