@@ -6,4 +6,5 @@ Rails.application.routes.draw do
   get '/404' => 'errors#not_found'
   get '/422' => 'errors#unacceptable'
   get '/500' => 'errors#internal_error'
+  get '/error' => 'errors#cause_an_internal_error'
 end

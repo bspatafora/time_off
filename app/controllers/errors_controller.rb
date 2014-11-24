@@ -10,4 +10,8 @@ class ErrorsController < ApplicationController
   def internal_error
     render :status => 500
   end
+
+  def cause_an_internal_error
+    i_cause_error
+  end
 end
