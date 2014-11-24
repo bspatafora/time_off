@@ -1,36 +1,43 @@
-<h1>Add day off</h1>
+<div class="container">
 
-<form action=<%= home_path %> method="post">
-  <label for="datepicker">Date</label>
-  <input type="text" name="date" id="datepicker" readonly="readonly" required>
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4 text-center">
+      <h3>Add day off</h1>
 
-  <label for="category">Category</label>
-  <select name="category" id="category">
-    <option value="Sick">Sick</option>
-    <option value="Vacation">Vacation</option>
-    <option value="Holiday">Holiday</option>
-  </select>
+      <form action=<%= home_path %> method="post" class="form-inline">
+        <div class="form-group">
+          <input type="date" name="date" class="form-control" id="datepicker" readonly="readonly" placeholder="Date" required>
+        </div>
+        <div class="form-group">
+          <select name="category" class="form-control" id="category">
+            <option value="Sick">Sick</option>
+            <option value="Vacation">Vacation</option>
+            <option value="Holiday">Holiday</option>
+          </select>
+        </div>
 
-  <input type="hidden" name="email" value=<%= @email %>>
-  <input type="submit" value="Submit">
-</form>
+        <input type="hidden" name="email" value=<%= @email %>>
+        <input type="submit" class="btn btn-primary" value="Submit">
+      </form>
+    </div>
+  </div>
 
-<h1>Days off for <%= @email %></h1>
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4 text-center">
+      <h3>Days off for <%= @email %></h1>
 
-<table>
-  <% @days_off.list.each do |day_off| %>
-    <tr>
-
-      <td>
-        <a href=<%= day_off.url %>><%= day_off.date %></a>
-      </td>
-
-      <td>
-        <%= day_off.category %>
-      </td>
-
-    </tr>
-  <% end %>
-</table>
-
-
+      <table class="table">
+        <% @days_off.list.each do |day_off| %>
+          <tr>
+            <td>
+              <a href=<%= day_off.url %>><%= day_off.date %></a>
+            </td>
+            <td>
+              <%= day_off.category %>
+            </td>
+          </tr>
+        <% end %>
+      </table>    
+    </div>
+  </div>
+</div>
