@@ -1,20 +1,36 @@
-<h1>Days off for <%= @email %></h1>
-<ul>
-  <% @days_off.list.each do |day_off| %>
-    <li><a href=<%= day_off.url %>><%= day_off.date %></a> — <%= day_off.category %></li>
-  <% end %>
-</ul>
-
 <h1>Add day off</h1>
+
 <form action=<%= home_path %> method="post">
-  <input type="hidden" name="email" value=<%= @email %>>
   <label for="datepicker">Date</label>
   <input type="text" name="date" id="datepicker" readonly="readonly" required>
+
   <label for="category">Category</label>
   <select name="category" id="category">
     <option value="Sick">Sick</option>
     <option value="Vacation">Vacation</option>
     <option value="Holiday">Holiday</option>
   </select>
+
+  <input type="hidden" name="email" value=<%= @email %>>
   <input type="submit" value="Submit">
 </form>
+
+<h1>Days off for <%= @email %></h1>
+
+<table>
+  <% @days_off.list.each do |day_off| %>
+    <tr>
+
+      <td>
+        <a href=<%= day_off.url %>><%= day_off.date %></a>
+      </td>
+
+      <td>
+        <%= day_off.category %>
+      </td>
+
+    </tr>
+  <% end %>
+</table>
+
+
