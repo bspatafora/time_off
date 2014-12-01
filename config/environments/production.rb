@@ -27,6 +27,13 @@ Rails.application.configure do
     :enable_starttls_auto => true
   }
 
+  config.middleware.use ExceptionNotification::Rack,
+   :email => {
+     :email_prefix         => "[Time Off error] ",
+     :sender_address       => %{"Application Error" <no-reply@8thlight.com>},
+     :exception_recipients => %w{bspatafora@8thlight.com}
+   } 
+
   config.i18n.fallbacks = true
 
   config.active_support.deprecation = :notify

@@ -17,6 +17,7 @@ gem 'omniauth', '~> 1.0'
 gem 'omniauth-google-oauth2'
 gem 'jquery-turbolinks'
 gem 'bootstrap-sass'
+gem 'exception_notification'
 
 group :development, :test do
   gem 'rake'
