@@ -4,7 +4,7 @@ require 'service'
 
 module CalendarService
   class Google
-    def addEvent(day_off)
+    def add_event(day_off)
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
       request = Net::HTTP::Post.new(uri)

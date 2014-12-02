@@ -6,7 +6,7 @@ module CalendarService
       @url = 'mock_url'
     end
 
-    def addEvent(args)
+    def add_event(args)
       @url
     end
   end

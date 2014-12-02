@@ -38,15 +38,25 @@ describe DaysOffController, :type => :controller do
   end
 
   describe '#create' do
-    it 'adds the day off to the calendar service and the repository, then redirects to home' do
-      email, date, category = 'user@email.com', '2014-11-14', 'Vacation'
+    context 'when user is logged in' do
+      it 'adds the day off to the calendar service and the repository, then redirects to home' do
+        email, date, category = 'user@email.com', '2014-11-14', 'Vacation'
+        session[:email] = email
 
-      post :create, email: email, date: date, category: category
-      day_off = Service.for(:day_off_repository).find_by_email(email).first
-      expect(day_off.date).to eq(date)
-      expect(day_off.category).to eq(category)
-      expect(day_off.url).to eq(Service.for(:calendar).url)
-      expect(response).to redirect_to(home_path)
+        post :create, email: email, date: date, category: category
+        day_off = Service.for(:day_off_repository).find_by_email(email)[0]
+        expect(day_off.date).to eq(date)
+        expect(day_off.category).to eq(category)
+        expect(day_off.url).to eq(Service.for(:calendar).url)
+        expect(response).to redirect_to(home_path)
+      end
+    end
+
+    context 'when user is not logged in' do
+      it 'redirects to the authorization URL' do
+        post :create, email: '', date: '', category: ''
+        expect(response).to redirect_to('/auth/google_oauth2')
+      end
     end
   end
 end
