@@ -2,13 +2,17 @@ require 'rails_helper'
 
 require 'calendar_service/mock'
 require 'memory_repository/day_off_repository'
+require 'memory_repository/user_repository'
 require 'repository_object/day_off'
+require 'token_service/mock'
 require 'service'
 
 describe DaysOffController, :type => :controller do
-  before do
+  before(:each) do
     Service.register(:day_off_repository, MemoryRepository::DayOffRepository.new)
+    Service.register(:user_repository, MemoryRepository::UserRepository.new)
     Service.register(:calendar, CalendarService::Mock.new)
+    Service.register(:token, TokenService::Mock.new)
   end
 
   describe '#index' do
@@ -25,7 +29,7 @@ describe DaysOffController, :type => :controller do
         get :index
         expect(assigns(:email)).to eq(@email)
         expect(assigns(:days_off).list[0]).to eq(@day_off)
-        expect(response).to render_template('index')
+        expect(response).to render_template(:index)
       end
     end
 
@@ -39,16 +43,24 @@ describe DaysOffController, :type => :controller do
 
   describe '#create' do
     context 'when user is logged in' do
-      it 'adds the day off to the calendar service and the repository, then redirects to home' do
-        email, date, category = 'user@email.com', '2014-11-14', 'Vacation'
-        session[:email] = email
+      before do
+        @email = 'user@email.com'
+        @date = '2014-11-14'
+        @category = 'Vacation'
 
-        post :create, email: email, date: date, category: category
-        day_off = Service.for(:day_off_repository).find_by_email(email)[0]
-        expect(day_off.date).to eq(date)
-        expect(day_off.category).to eq(category)
+        user = RepositoryObject::User.new(email: @email)
+        Service.for(:user_repository).save(user)
+      end
+
+      it 'adds the day off to the calendar service and the repository, then redirects to the days off path' do
+        session[:email] = @email
+
+        post :create, email: @email, date: @date, category: @category
+        day_off = Service.for(:day_off_repository).find_by_email(@email)[0]
+        expect(day_off.date).to eq(@date)
+        expect(day_off.category).to eq(@category)
         expect(day_off.url).to eq(Service.for(:calendar).url)
-        expect(response).to redirect_to(home_path)
+        expect(response).to redirect_to(days_off_path)
       end
     end
 

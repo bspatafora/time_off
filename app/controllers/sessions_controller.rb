@@ -14,6 +14,6 @@ class SessionsController < ApplicationController
 
     session[:email] = auth_hash[:info][:email]
 
-    redirect_to home_path
+    redirect_to days_off_path
   end
 end

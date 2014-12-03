@@ -6,8 +6,8 @@ module CalendarService
       @url = 'mock_url'
     end
 
-    def add_event(args)
-      @url
+    def create(day_off, token)
+      OpenStruct.new(url: @url)
     end
   end
 end
