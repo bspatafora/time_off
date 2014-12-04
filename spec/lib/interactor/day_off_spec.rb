@@ -27,17 +27,17 @@ describe Interactor::DayOff do
 
   describe '#create' do
     before(:each) do
-      @email = 'user@email.com'
-      @date = '2014-12-02'
-      @category = 'Holiday'
+      @email, @date, @category = 'user@email.com', '2014-12-02', 'Holiday'
+      expired = 946684800
 
-      user = RepositoryObject::User.new(email: @email)
+      user = RepositoryObject::User.new(
+        email: @email,
+        token_expiration: expired)
       Service.for(:user_repository).save(user)
     end
 
     it 'adds the day off to the day off repository' do
       Interactor::DayOff.create(email: @email, date: @date, category: @category)
-
       day_off = Service.for(:day_off_repository).find_by_email(@email)[0]
       expect(day_off.email).to eq(@email)
       expect(day_off.date).to eq(@date)
@@ -46,9 +46,15 @@ describe Interactor::DayOff do
 
     it 'adds the day off to the calendar service, persisting the returned URL' do
       Interactor::DayOff.create(email: @email, date: @date, category: @category)
-
       day_off = Service.for(:day_off_repository).find_by_email(@email)[0]
       expect(day_off.url).to eq(Service.for(:calendar).url)
+    end
+
+    it 'updates the user’s token data if needed' do
+      Interactor::DayOff.create(email: @email, date: @date, category: @category)
+      user = Service.for(:user_repository).find_by_email(@email)
+      expect(user.token).to eq(Service.for(:token).token)
+      expect(user.token_expiration).to eq(Service.for(:token).token_expiration)
     end
   end
 end

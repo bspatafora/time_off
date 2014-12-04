@@ -10,7 +10,7 @@ module TokenService
     def refresh(refresh_token)
       OpenStruct.new(
         token: @token,
-        token_expiration: @token_expiration)
+        expiration: @token_expiration)
     end
   end
 end
