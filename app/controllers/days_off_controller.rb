@@ -17,6 +17,13 @@ class DaysOffController < ApplicationController
     redirect_to days_off_path
   end
 
+  def destroy
+    Interactor::DayOff.destroy(
+      params[:event_id],
+      session[:email])
+    redirect_to days_off_path
+  end
+
   private
 
   def authenticate_user!

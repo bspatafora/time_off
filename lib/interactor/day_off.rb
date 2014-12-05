@@ -12,14 +12,23 @@ module Interactor
         email: args[:email],
         date: args[:date],
         category: args[:category])
-      user = user_repository.find_by_email(args[:email])
-      token = update_token(user)
-      event = calendar_service.create(day_off, token)
+      event = calendar_service.create(day_off, token_for(args[:email]))
+      day_off.event_id = event.event_id
       day_off.url = event.url
       day_off_repository.save(day_off)
     end
 
+    def self.destroy(event_id, email)
+      day_off_repository.destroy_by_event_id(event_id)
+      calendar_service.destroy(event_id, token_for(email))
+    end
+
     private
+
+    def self.token_for(email)
+      user = user_repository.find_by_email(email)
+      update_token(user)
+    end
 
     def self.update_token(user)
       return user.token if token_still_valid(user.token_expiration)

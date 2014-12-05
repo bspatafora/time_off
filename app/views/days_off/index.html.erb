@@ -35,6 +35,10 @@
             <td>
               <%= day_off.category %>
             </td>
+            <td>
+              <%= button_to "Remove", days_off_path,
+                method: :delete, params: { event_id: day_off.event_id } %>
+            </td>
           </tr>
         <% end %>
       </table>    

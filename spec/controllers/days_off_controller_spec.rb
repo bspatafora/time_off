@@ -46,4 +46,25 @@ describe DaysOffController, :type => :controller do
       end
     end
   end
+
+  describe '#destroy' do
+    context 'when user is logged in' do
+      it 'starts off destruction of the day off with the specified ID, then redirects to the day off URL' do
+        email, event_id = 'user@email.com', '3v3n71d'
+        session[:email] = email
+        allow(Interactor::DayOff).to receive(:destroy)
+
+        delete :destroy, event_id: event_id
+        expect(Interactor::DayOff).to have_received(:destroy).with(event_id, email)
+        expect(response).to redirect_to(days_off_path)
+      end
+    end
+
+    context 'when user is not logged in' do
+      it 'redirects to the authentication URL' do
+        delete :destroy
+        expect(response).to redirect_to('/auth/google_oauth2')
+      end
+    end
+  end
 end

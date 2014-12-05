@@ -44,14 +44,48 @@ describe Interactor::DayOff do
       expect(day_off.category).to eq(@category)
     end
 
-    it 'adds the day off to the calendar service, persisting the returned URL' do
+    it 'adds the day off to the calendar service, persisting the returned ID and URL' do
       Interactor::DayOff.create(email: @email, date: @date, category: @category)
       day_off = Service.for(:day_off_repository).find_by_email(@email)[0]
+      expect(day_off.event_id).to eq(Service.for(:calendar).event_id)
       expect(day_off.url).to eq(Service.for(:calendar).url)
     end
 
     it 'updates the user’s token data if needed' do
       Interactor::DayOff.create(email: @email, date: @date, category: @category)
+      user = Service.for(:user_repository).find_by_email(@email)
+      expect(user.token).to eq(Service.for(:token).token)
+      expect(user.token_expiration).to eq(Service.for(:token).token_expiration)
+    end
+  end
+
+  describe '#destroy' do
+    before(:each) do
+      @email, @event_id = 'user@email.com', '3v3n71d'
+      expired = 946684800
+
+      user = RepositoryObject::User.new(
+        email: @email,
+        token_expiration: expired)
+      Service.for(:user_repository).save(user)
+    end
+
+    it 'removes the day off from the day off repository' do
+      day_off = RepositoryObject::DayOff.new(email: @email, event_id: @event_id)
+      Service.for(:day_off_repository).save(day_off)
+
+      Interactor::DayOff.destroy(@event_id, @email)
+      days_off_for_user = Service.for(:day_off_repository).find_by_email(@email)
+      expect(days_off_for_user.count).to eq(0)
+    end
+
+    it 'removes the day off from the calendar service' do
+      Interactor::DayOff.destroy(@event_id, @email)
+      expect(Service.for(:calendar).destroyed_events).to include(@event_id)
+    end
+
+    it 'updates the user’s token data if needed' do
+      Interactor::DayOff.destroy(@event_id, @email)
       user = Service.for(:user_repository).find_by_email(@email)
       expect(user.token).to eq(Service.for(:token).token)
       expect(user.token_expiration).to eq(Service.for(:token).token_expiration)
