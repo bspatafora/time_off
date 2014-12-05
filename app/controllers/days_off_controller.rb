@@ -5,8 +5,7 @@ class DaysOffController < ApplicationController
   before_filter :authenticate_user!
 
   def index
-    @email = session[:email]
-    @days_off = Presenter::DaysOff.new(Interactor::DayOff.all_for(@email))
+    @days_off = Presenter::DaysOff.new(Interactor::DayOff.all_for(session[:email]))
   end
 
   def create

@@ -5,14 +5,13 @@ require 'rails_helper'
 describe DaysOffController, :type => :controller do
   describe '#index' do
     context 'when user is logged in' do
-      it 'sets @email and @days_off, then renders index' do
+      it 'sets @days_off, then renders index' do
         email = 'user@email.com'
         session[:email] = email
         allow(Interactor::DayOff).to receive(:all_for)
 
         get :index
         expect(Interactor::DayOff).to have_received(:all_for).with(email)
-        expect(assigns(:email)).to eq(email)
         expect(assigns(:days_off)).to be_a(Presenter::DaysOff)
         expect(response).to render_template(:index)
       end
