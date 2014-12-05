@@ -1,5 +1,4 @@
-require 'service'
-require 'repository_object/day_off'
+require 'interactor/day_off'
 require 'presenter/days_off'
 
 class DaysOffController < ApplicationController
@@ -7,17 +6,22 @@ class DaysOffController < ApplicationController
 
   def index
     @email = session[:email]
-    @days_off = Presenter::DaysOff.new(Service.for(:day_off_repository).find_by_email(@email))
+    @days_off = Presenter::DaysOff.new(Interactor::DayOff.all_for(@email))
   end
 
   def create
-    day_off = RepositoryObject::DayOff.new(
+    Interactor::DayOff.create(
       email: session[:email],
       date: params[:date],
       category: params[:category])
-    day_off.url = Service.for(:calendar).add_event(day_off)
-    Service.for(:day_off_repository).save(day_off)
-    redirect_to home_path
+    redirect_to days_off_path
+  end
+
+  def destroy
+    Interactor::DayOff.destroy(
+      params[:event_id],
+      session[:email])
+    redirect_to days_off_path
   end
 
   private

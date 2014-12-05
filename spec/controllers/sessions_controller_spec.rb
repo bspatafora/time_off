@@ -22,13 +22,13 @@ describe SessionsController, :type => :controller do
         request.env['omniauth.auth'] = @auth_hash
       end
 
-      it 'stores the user’s email in the session, and token and token expiration in the repository, then redirects to home' do
+      it 'stores the user’s email in the session, and token and token expiration in the repository, then redirects to the days off path' do
         post :create, :provider => 'provider'
         user = Service.for(:user_repository).find_by_email(@email)
         expect(session[:email]).to eq(@email)
         expect(user.token).to eq(@token)
         expect(user.token_expiration).to eq(@token_expiration)
-        expect(response).to redirect_to(home_path)
+        expect(response).to redirect_to(days_off_path)
       end
     end
 

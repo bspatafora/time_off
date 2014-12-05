@@ -1,36 +1,25 @@
+require 'interactor/day_off'
+require 'presenter/days_off'
 require 'rails_helper'
 
-require 'calendar_service/mock'
-require 'memory_repository/day_off_repository'
-require 'repository_object/day_off'
-require 'service'
-
 describe DaysOffController, :type => :controller do
-  before do
-    Service.register(:day_off_repository, MemoryRepository::DayOffRepository.new)
-    Service.register(:calendar, CalendarService::Mock.new)
-  end
-
   describe '#index' do
     context 'when user is logged in' do
-      before do
-        @email = 'user@email.com'
-        session[:email] = @email
+      it 'sets @email and @days_off, then renders index' do
+        email = 'user@email.com'
+        session[:email] = email
+        allow(Interactor::DayOff).to receive(:all_for)
 
-        @day_off = RepositoryObject::DayOff.new(email: @email)
-        Service.for(:day_off_repository).save(@day_off)
-      end
-
-      it 'sets @email and @days_off' do
         get :index
-        expect(assigns(:email)).to eq(@email)
-        expect(assigns(:days_off).list[0]).to eq(@day_off)
-        expect(response).to render_template('index')
+        expect(Interactor::DayOff).to have_received(:all_for).with(email)
+        expect(assigns(:email)).to eq(email)
+        expect(assigns(:days_off)).to be_a(Presenter::DaysOff)
+        expect(response).to render_template(:index)
       end
     end
 
     context 'when user is not logged in' do
-      it 'redirects to the authorization URL' do
+      it 'redirects to the authentication URL' do
         get :index
         expect(response).to redirect_to('/auth/google_oauth2')
       end
@@ -39,22 +28,41 @@ describe DaysOffController, :type => :controller do
 
   describe '#create' do
     context 'when user is logged in' do
-      it 'adds the day off to the calendar service and the repository, then redirects to home' do
-        email, date, category = 'user@email.com', '2014-11-14', 'Vacation'
+      it 'starts off creation of a day off with the passed parameters, then redirects to the day off URL' do
+        email, date, category = 'user@email.com', '2014-12-04', 'Vacation'
         session[:email] = email
-
+        allow(Interactor::DayOff).to receive(:create)
+        
         post :create, email: email, date: date, category: category
-        day_off = Service.for(:day_off_repository).find_by_email(email)[0]
-        expect(day_off.date).to eq(date)
-        expect(day_off.category).to eq(category)
-        expect(day_off.url).to eq(Service.for(:calendar).url)
-        expect(response).to redirect_to(home_path)
+        expect(Interactor::DayOff).to have_received(:create).with(email: email, date: date, category: category)
+        expect(response).to redirect_to(days_off_path)
       end
     end
 
     context 'when user is not logged in' do
-      it 'redirects to the authorization URL' do
-        post :create, email: '', date: '', category: ''
+      it 'redirects to the authentication URL' do
+        post :create
+        expect(response).to redirect_to('/auth/google_oauth2')
+      end
+    end
+  end
+
+  describe '#destroy' do
+    context 'when user is logged in' do
+      it 'starts off destruction of the day off with the specified ID, then redirects to the day off URL' do
+        email, event_id = 'user@email.com', '3v3n71d'
+        session[:email] = email
+        allow(Interactor::DayOff).to receive(:destroy)
+
+        delete :destroy, event_id: event_id
+        expect(Interactor::DayOff).to have_received(:destroy).with(event_id, email)
+        expect(response).to redirect_to(days_off_path)
+      end
+    end
+
+    context 'when user is not logged in' do
+      it 'redirects to the authentication URL' do
+        delete :destroy
         expect(response).to redirect_to('/auth/google_oauth2')
       end
     end

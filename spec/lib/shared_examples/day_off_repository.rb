@@ -11,12 +11,12 @@ shared_examples 'a day off repository' do
     eval(repository_name)::UserRepository.new
   end
 
-  describe '#save and #find_by_user' do
+  describe '#save and #find_by_email' do
     before(:each) do
       @day_off_repository = described_class.new
       @user = RepositoryObject::User.new(email: 'user@email.com')
       user_repository.save(@user)
-      @date, @category, @url = '2014-11-14', 'Holiday', 'day_off/link'
+      @date, @category, @event_id, @url = '2014-11-14', 'Holiday', '12345', 'day_off/link'
     end
 
     it 'saves days off and returns a user’s days off' do
@@ -24,12 +24,14 @@ shared_examples 'a day off repository' do
         email: @user.email,
         date: @date,
         category: @category,
+        event_id: @event_id,
         url: @url)
       @day_off_repository.save(day_off)
 
       retrieved_day_off = @day_off_repository.find_by_email(@user.email).first
       expect(retrieved_day_off.date).to eq(@date)
       expect(retrieved_day_off.category).to eq(@category)
+      expect(retrieved_day_off.event_id).to eq(@event_id)
       expect(retrieved_day_off.url).to eq(@url)
     end
 
@@ -44,6 +46,24 @@ shared_examples 'a day off repository' do
 
       retrieved_days_off = @day_off_repository.find_by_email(@user.email)
       expect(retrieved_days_off.count).to eq(2)
+    end
+  end
+
+  describe '#destroy_by_event_id' do
+    before do
+      @day_off_repository = described_class.new
+      @user = RepositoryObject::User.new(email: 'user@email.com')
+      user_repository.save(@user)
+    end
+
+    it 'destroys the day off with the specified event id' do
+      email, event_id = 'user@email.com', '3v3n71d'
+      day_off = RepositoryObject::DayOff.new(email: @user.email, event_id: event_id)
+      @day_off_repository.save(day_off)
+
+      @day_off_repository.destroy_by_event_id(event_id)
+      days_off_for_user = @day_off_repository.find_by_email(@user.email)
+      expect(days_off_for_user.count).to eq(0)
     end
   end
 end
