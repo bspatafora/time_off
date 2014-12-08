@@ -3,8 +3,8 @@ require 'repository_object/day_off'
 module ARRepository
   class DayOffRepository
     def save(object)
-      user = User.find_by(email: object.email)
-      user.days_off.create(
+      DayOff.create(
+        user_id: User.select('id').where(email: object.email).first.id,
         date: object.date,
         category: object.category,
         event_id: object.event_id,
@@ -12,7 +12,7 @@ module ARRepository
     end
 
     def find_by_email(email)
-      days_off = User.find_by(email: email).days_off
+      days_off = DayOff.joins(:user).where(users: { email: email })
       days_off.map { |day_off| to_domain_object(day_off, email) }
     end
 
