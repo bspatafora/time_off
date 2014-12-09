@@ -1,10 +1,10 @@
 require 'json'
-require 'net/http'
+require 'service'
 
 module TokenService
   class Google
     def self.refresh(refresh_token)
-      response = Net::HTTP.post_form(uri, body(refresh_token))
+      response = Service.for(:http_client).post_form(uri, params(refresh_token))
       data = JSON.parse(response.body)
       OpenStruct.new(
         token: data['access_token'],
@@ -17,7 +17,7 @@ module TokenService
       URI('https://accounts.google.com/o/oauth2/token')
     end
 
-    def self.body(refresh_token)
+    def self.params(refresh_token)
       { 'refresh_token' => refresh_token,
         'client_id' => Rails.application.config.client_id,
         'client_secret' => Rails.application.config.client_secret,

@@ -1,5 +1,5 @@
 require 'json'
-require 'net/http'
+require 'service'
 
 module CalendarService
   class Google

@@ -17,5 +17,9 @@ module HTTPClient
     def delete(url, headers)
       @client.delete(url, headers)
     end
+
+    def post_form(uri, params)
+      Net::HTTP.post_form(uri, params)
+    end
   end
 end
