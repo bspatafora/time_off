@@ -1,6 +1,7 @@
 require 'calendar_service/google'
 require 'http_client/mock'
 require 'repository_object/day_off'
+require 'service'
 
 describe CalendarService::Google do
   before do
@@ -14,7 +15,7 @@ describe CalendarService::Google do
       @day_off = RepositoryObject::DayOff.new(
         email: 'user@email.com',
         date: '2014-12-08',
-        range: 'all_day',
+        range: Range.new(description: Range::ALL_DAY),
         category: 'Vacation')
     end
 
@@ -29,14 +30,42 @@ describe CalendarService::Google do
       expect(@http_client.use_ssl).to be true
     end
 
-    it 'makes a POST request with the correct parameters' do
-      described_class.create(@day_off, @token)
-      expect(@http_client.received_post_url).to match(
-        /^https:\/\/www.googleapis.com\/calendar\/v3\/calendars\/.*\/events$/)
-      expect(@http_client.received_body).to eq(
-        "{\"start\":{\"date\":\"2014-12-08\"},\"end\":{\"date\":\"2014-12-09\"},\"summary\":\"user@email.com—OOO (Vacation)\"}")
-      expect(@http_client.received_post_headers).to eq(
-        {"Content-Type"=>"application/json", "Authorization"=>"Bearer 70k3n"})
+    context 'when creating an all-day event' do
+      it 'makes a POST request with the correct parameters' do
+        described_class.create(@day_off, @token)
+
+        expect(@http_client.received_post_url).to match(
+          /^https:\/\/www.googleapis.com\/calendar\/v3\/calendars\/.*\/events$/)
+
+        expect(@http_client.received_body).to eq(
+          "{\"start\":{\"date\":\"2014-12-08\"},\"end\":{\"date\":\"2014-12-09\"},\"summary\":\"user@email.com—OOO (Vacation)\"}")
+
+        expect(@http_client.received_post_headers).to eq(
+          {"Content-Type"=>"application/json", "Authorization"=>"Bearer 70k3n"})
+      end
+    end
+
+    context 'when creating a part-day event' do
+      it 'makes a POST request with the correct parameters' do
+        partial_day_off = RepositoryObject::DayOff.new(
+          email: 'user@email.com',
+          date: '2014-12-09',
+          range: Range.new(
+            description: Range::MORNING,
+            start_time: '09:00:00',
+            end_time: '13:00:00'),
+          category: 'Sick')
+        described_class.create(partial_day_off, @token)
+
+        expect(@http_client.received_post_url).to match(
+          /^https:\/\/www.googleapis.com\/calendar\/v3\/calendars\/.*\/events$/)
+
+        expect(@http_client.received_body).to eq(
+          "{\"start\":{\"dateTime\":\"2014-12-09T09:00:00-06:00\"},\"end\":{\"dateTime\":\"2014-12-09T13:00:00-06:00\"},\"summary\":\"user@email.com—OOO (Sick)\"}")
+
+        expect(@http_client.received_post_headers).to eq(
+          {"Content-Type"=>"application/json", "Authorization"=>"Bearer 70k3n"})
+      end
     end
 
     it 'returns an object containing the event ID and URL' do

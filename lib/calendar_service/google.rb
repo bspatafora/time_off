@@ -4,31 +4,33 @@ require 'service'
 module CalendarService
   class Google
     def self.create(day_off, token)
-      http = Service.for(:http_client)
-      http.create(base_uri.host, base_uri.port)
-      http.use_ssl = true
-      headers = { 'Content-Type' => 'application/json', 'Authorization' => "Bearer #{token}" }
-      response = http.post(base_url, event_body(day_off), headers)
+      response = http_client.post(
+        base_url,
+        event_body(day_off),
+        { 'Content-Type' => 'application/json',
+          'Authorization' => "Bearer #{token}" })
       OpenStruct.new(
         event_id: parse_event_id(response),
         url: parse_event_url(response))
     end
 
     def self.destroy(event_id, token)
-      http = Service.for(:http_client)
-      http.create(base_uri.host, base_uri.port)
-      http.use_ssl = true
-      http.delete(delete_url(event_id), { 'Authorization' => "Bearer #{token}" })
+      http_client.delete(
+        delete_url(event_id),
+        { 'Authorization' => "Bearer #{token}" })
     end
 
     private
 
-    def self.delete_url(event_id)
-      base_url + "/" + event_id
+    def self.http_client
+      http = Service.for(:http_client)
+      http.create('www.googleapis.com', 443)
+      http.use_ssl = true
+      http
     end
 
-    def self.base_uri
-      URI(base_url)
+    def self.delete_url(event_id)
+      base_url + "/" + event_id
     end
 
     def self.base_url
@@ -38,9 +40,25 @@ module CalendarService
     def self.event_body(day_off)
       date = day_off.date
       summary = summary(day_off.email, day_off.category)
+
+      if day_off.range.all_day?
+        all_day_event_body(date, summary)
+      else
+        part_day_event_body(date, summary, day_off.range)
+      end
+    end
+
+    def self.all_day_event_body(date, summary)
       JSON.generate({
         start: { date: date },
         end: { date: end_date(date) },
+        summary: summary })
+    end
+
+    def self.part_day_event_body(date, summary, range)
+      JSON.generate({
+        start: { dateTime: date + 'T' + range.start_time },
+        end: { dateTime: date + 'T' + range.end_time },
         summary: summary })
     end
 

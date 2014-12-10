@@ -2,6 +2,7 @@ require 'calendar_service/mock'
 require 'interactor/day_off'
 require 'memory_repository/day_off_repository'
 require 'memory_repository/user_repository'
+require 'range'
 require 'repository_object/day_off'
 require 'service'
 require 'token_service/mock'
@@ -27,7 +28,10 @@ describe Interactor::DayOff do
 
   describe '#create' do
     before(:each) do
-      @email, @date, @category = 'user@email.com', '2014-12-02', 'Holiday'
+      @email = 'user@email.com'
+      @date = '2014-12-02'
+      @range = 'all_day'
+      @category = 'Holiday'
       expired = 946684800
 
       user = RepositoryObject::User.new(
@@ -37,22 +41,35 @@ describe Interactor::DayOff do
     end
 
     it 'adds the day off to the day off repository' do
-      Interactor::DayOff.create(email: @email, date: @date, category: @category)
+      Interactor::DayOff.create(
+        email: @email,
+        date: @date,
+        range: @range,
+        category: @category)
       day_off = Service.for(:day_off_repository).find_by_email(@email)[0]
       expect(day_off.email).to eq(@email)
       expect(day_off.date).to eq(@date)
+      expect(day_off.range.description).to eq(Range::ALL_DAY)
       expect(day_off.category).to eq(@category)
     end
 
     it 'adds the day off to the calendar service, persisting the returned ID and URL' do
-      Interactor::DayOff.create(email: @email, date: @date, category: @category)
+      Interactor::DayOff.create(
+        email: @email,
+        date: @date,
+        range: @range,
+        category: @category)
       day_off = Service.for(:day_off_repository).find_by_email(@email)[0]
       expect(day_off.event_id).to eq(Service.for(:calendar).event_id)
       expect(day_off.url).to eq(Service.for(:calendar).url)
     end
 
     it 'updates the user’s token data if needed' do
-      Interactor::DayOff.create(email: @email, date: @date, category: @category)
+      Interactor::DayOff.create(
+        email: @email,
+        date: @date,
+        range: @range,
+        category: @category)
       user = Service.for(:user_repository).find_by_email(@email)
       expect(user.token).to eq(Service.for(:token).token)
       expect(user.token_expiration).to eq(Service.for(:token).token_expiration)

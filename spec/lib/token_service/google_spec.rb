@@ -1,3 +1,5 @@
+require 'http_client/mock'
+require 'service'
 require 'token_service/google'
 
 describe TokenService::Google do
