@@ -1,4 +1,4 @@
-class Range
+class TimeRange
   ALL_DAY = 'all_day'
   MORNING = 'morning'
   AFTERNOON = 'afternoon'

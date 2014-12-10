@@ -2,9 +2,9 @@ require 'calendar_service/mock'
 require 'interactor/day_off'
 require 'memory_repository/day_off_repository'
 require 'memory_repository/user_repository'
-require 'range'
 require 'repository_object/day_off'
 require 'service'
+require 'time_range'
 require 'token_service/mock'
 
 describe Interactor::DayOff do
@@ -49,7 +49,7 @@ describe Interactor::DayOff do
       day_off = Service.for(:day_off_repository).find_by_email(@email)[0]
       expect(day_off.email).to eq(@email)
       expect(day_off.date).to eq(@date)
-      expect(day_off.range.description).to eq(Range::ALL_DAY)
+      expect(day_off.range.description).to eq(TimeRange::ALL_DAY)
       expect(day_off.category).to eq(@category)
     end
 

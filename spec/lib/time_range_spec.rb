@@ -1,10 +1,10 @@
-require 'range'
+require 'time_range'
 
-describe Range do
+describe TimeRange do
   context 'when range is partial day' do
     before do
-      @range = Range.new(
-        description: Range::MORNING,
+      @range = TimeRange.new(
+        description: TimeRange::MORNING,
         start_time: '09:00:00',
         end_time: '13:00:00')
     end
@@ -36,7 +36,7 @@ describe Range do
 
   context 'when range is full day' do
     before do
-      @range = Range.new(description: Range::ALL_DAY)
+      @range = TimeRange.new(description: TimeRange::ALL_DAY)
     end
 
     describe '#start_time' do

@@ -1,4 +1,4 @@
-require 'range_factory'
+require 'time_range_factory'
 require 'repository_object/day_off'
 
 module ARRepository
@@ -29,7 +29,7 @@ module ARRepository
       RepositoryObject::DayOff.new(
         email: email,
         date: day_off.date,
-        range: RangeFactory.build(day_off.range),
+        range: TimeRangeFactory.build(day_off.range),
         category: day_off.category,
         event_id: day_off.event_id,
         url: day_off.url)

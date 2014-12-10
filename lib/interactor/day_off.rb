@@ -1,6 +1,6 @@
-require 'range_factory'
 require 'repository_object/day_off'
 require 'service'
+require 'time_range_factory'
 
 module Interactor
   class DayOff
@@ -12,7 +12,7 @@ module Interactor
       day_off = RepositoryObject::DayOff.new(
         email: args[:email],
         date: args[:date],
-        range: RangeFactory.build(args[:range]),
+        range: TimeRangeFactory.build(args[:range]),
         category: args[:category])
       event = calendar_service.create(day_off, token_for(args[:email]))
       day_off.event_id = event.event_id

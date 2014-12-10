@@ -2,6 +2,7 @@ require 'calendar_service/google'
 require 'http_client/mock'
 require 'repository_object/day_off'
 require 'service'
+require 'time_range'
 
 describe CalendarService::Google do
   before do
@@ -15,7 +16,7 @@ describe CalendarService::Google do
       @day_off = RepositoryObject::DayOff.new(
         email: 'user@email.com',
         date: '2014-12-08',
-        range: Range.new(description: Range::ALL_DAY),
+        range: TimeRange.new(description: TimeRange::ALL_DAY),
         category: 'Vacation')
     end
 
@@ -50,8 +51,8 @@ describe CalendarService::Google do
         partial_day_off = RepositoryObject::DayOff.new(
           email: 'user@email.com',
           date: '2014-12-09',
-          range: Range.new(
-            description: Range::MORNING,
+          range: TimeRange.new(
+            description: TimeRange::MORNING,
             start_time: '09:00:00',
             end_time: '13:00:00'),
           category: 'Sick')

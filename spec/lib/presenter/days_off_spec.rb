@@ -1,21 +1,21 @@
 require 'presenter/days_off'
-require 'range'
 require 'repository_object/day_off'
+require 'time_range'
 
 describe Presenter::DaysOff do
   before do
     @day_off_1 = RepositoryObject::DayOff.new(
       date: '2014-11-17',
-      range: Range.new(description: Range::ALL_DAY))
+      range: TimeRange.new(description: TimeRange::ALL_DAY))
     @day_off_2 = RepositoryObject::DayOff.new(
       date: '2014-11-18',
-      range: Range.new(description: Range::MORNING))
+      range: TimeRange.new(description: TimeRange::MORNING))
     @day_off_3 = RepositoryObject::DayOff.new(
       date: '2014-11-19',
-      range: Range.new(description: Range::AFTERNOON))
+      range: TimeRange.new(description: TimeRange::AFTERNOON))
     @day_off_4 = RepositoryObject::DayOff.new(
       date: '2014-11-20',
-      range: Range.new(description: Range::LATE_AFTERNOON))
+      range: TimeRange.new(description: TimeRange::LATE_AFTERNOON))
   end
 
   it 'returns the days off in ascending order' do

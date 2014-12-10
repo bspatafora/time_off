@@ -1,4 +1,4 @@
-require 'range'
+require 'time_range'
 
 module Presenter
   class DaysOff
@@ -15,13 +15,13 @@ module Presenter
 
     def add_range_description_to(day_off)
       case day_off.range.description
-      when Range::ALL_DAY
+      when TimeRange::ALL_DAY
         range_description = 'All day'
-      when Range::MORNING
+      when TimeRange::MORNING
         range_description = 'Morning'
-      when Range::AFTERNOON
+      when TimeRange::AFTERNOON
         range_description = 'Afternoon'
-      when Range::LATE_AFTERNOON
+      when TimeRange::LATE_AFTERNOON
         range_description = 'Late afternoon'
       end
 

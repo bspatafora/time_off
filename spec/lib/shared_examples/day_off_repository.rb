@@ -1,6 +1,6 @@
-require 'range'
 require 'repository_object/user'
 require 'repository_object/day_off'
+require 'time_range'
 
 shared_examples 'a day off repository' do
   before do
@@ -19,7 +19,7 @@ shared_examples 'a day off repository' do
       user_repository.save(@user)
 
       @date = '2014-11-14'
-      @range = Range.new(description: Range::ALL_DAY)
+      @range = TimeRange.new(description: TimeRange::ALL_DAY)
       @category = 'Holiday'
       @event_id = '3v3n71d'
       @url = 'event/url'
@@ -37,7 +37,7 @@ shared_examples 'a day off repository' do
 
       retrieved_day_off = @day_off_repository.find_by_email(@user.email).first
       expect(retrieved_day_off.date).to eq(@date)
-      expect(retrieved_day_off.range).to eq(@range)
+      expect(retrieved_day_off.range.description).to eq(@range.description)
       expect(retrieved_day_off.category).to eq(@category)
       expect(retrieved_day_off.event_id).to eq(@event_id)
       expect(retrieved_day_off.url).to eq(@url)
@@ -70,7 +70,7 @@ shared_examples 'a day off repository' do
       day_off = RepositoryObject::DayOff.new(
         email: @user.email,
         event_id: event_id,
-        range: Range.new(description: Range::ALL_DAY))
+        range: TimeRange.new(description: TimeRange::ALL_DAY))
       @day_off_repository.save(day_off)
 
       @day_off_repository.destroy_by_event_id(event_id)
