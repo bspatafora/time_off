@@ -19,6 +19,9 @@ module TimeOff
     config.client_id = ENV['TIME_OFF_CLIENT_ID']
     config.client_secret = ENV['TIME_OFF_CLIENT_SECRET']
     config.time_zone_offset = '-06:00'
+    config.flex_days = 15
+    config.current_year_flex_holidays = 3
+    config.next_year_flex_holidays = 5
 
     config.exceptions_app = self.routes
     # Settings in config/environments/* take precedence over those specified here.
