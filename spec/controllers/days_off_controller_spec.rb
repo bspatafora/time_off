@@ -27,13 +27,44 @@ describe DaysOffController, :type => :controller do
 
   describe '#create' do
     context 'when user is logged in' do
+      before do
+        @email = 'user@email.com'
+        @date = '2014-12-04'
+        @range = 'morning'
+        @category = 'Vacation'
+        session[:email] = @email
+      end
+
       it 'starts off creation of a day off with the passed parameters, then redirects to the day off URL' do
-        email, date, category = 'user@email.com', '2014-12-04', 'Vacation'
-        session[:email] = email
         allow(Interactor::DayOff).to receive(:create)
         
-        post :create, email: email, date: date, category: category
-        expect(Interactor::DayOff).to have_received(:create).with(email: email, date: date, category: category)
+        post :create,
+          email: @email,
+          date: @date,
+          range: @range,
+          category: @category
+        expect(Interactor::DayOff).to have_received(:create).with(
+          email: @email,
+          date: @date,
+          range: @range,
+          category: @category)
+        expect(response).to redirect_to(days_off_path)
+      end
+
+      it 'passes the interactor a range of “all_day” if the `day-length` param has a value of “full_day”' do
+        allow(Interactor::DayOff).to receive(:create)
+        
+        post :create,
+          email: @email,
+          date: @date,
+          'day-length' => 'full_day',
+          range: @range,
+          category: @category
+        expect(Interactor::DayOff).to have_received(:create).with(
+          email: @email,
+          date: @date,
+          range: 'all_day',
+          category: @category)
         expect(response).to redirect_to(days_off_path)
       end
     end

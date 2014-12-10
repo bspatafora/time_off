@@ -1,18 +1,34 @@
 <div class="container">
 
   <div class="row">
-    <div class="col-md-4 col-md-offset-4 text-center">
+    <div class="col-md-8 col-md-offset-2 text-center">
       <h2>Time Off</h2>
 
       <form action=<%= days_off_path %> method="post" class="form-inline">
         <div class="form-group">
-          <input type="date" name="date" class="form-control" id="datepicker" readonly="readonly" placeholder="Date" required>
+          <input type="date" name="date" class="form-control" id="datepicker" data-id="datepicker" readonly="readonly" placeholder="Date" required>
         </div>
+
         <div class="form-group">
-          <select name="category" class="form-control" id="category">
+          <select name="category" class="form-control">
             <option value="Sick">Sick</option>
             <option value="Vacation">Vacation</option>
             <option value="Holiday">Holiday</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <select name="day-length" class="form-control" data-id="day-length">
+            <option value="full_day">Full</option>
+            <option value="half_day">Half</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <select name="range" class="form-control" data-id="range">
+            <option value="morning">Morning (9–1)</option>
+            <option value="afternoon">Afternoon (11–3)</option>
+            <option value="late_afternoon">Late afternoon (1–5)</option>
           </select>
         </div>
 
@@ -23,12 +39,13 @@
   </div>
 
   <div class="row top-buffer">
-    <div class="col-md-4 col-md-offset-4 text-center">
+    <div class="col-md-8 col-md-offset-2 text-center">
       <table class="table">
         <% @days_off.list.each do |day_off| %>
           <tr>
             <td> <a href=<%= day_off.url %>><%= day_off.date %></a> </td>
             <td> <%= day_off.category %> </td>
+            <td> <%= day_off.range_description %> </td>
             <td>
               <%= button_to "Remove", days_off_path,
                 method: :delete,

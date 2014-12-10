@@ -1,39 +1,36 @@
 require 'json'
-require 'net/http'
+require 'service'
 
 module CalendarService
   class Google
     def self.create(day_off, token)
-      http = Net::HTTP.new(base_uri.host, base_uri.port)
-      http.use_ssl = true
-      request = Net::HTTP::Post.new(base_uri)
-      request.add_field('Content-Type', 'application/json')
-      request.add_field('Authorization', "Bearer #{token}")
-      request.body = event_body(day_off)
-      response = http.request(request)
+      response = http_client.post(
+        base_url,
+        event_body(day_off),
+        { 'Content-Type' => 'application/json',
+          'Authorization' => "Bearer #{token}" })
       OpenStruct.new(
         event_id: parse_event_id(response),
         url: parse_event_url(response))
     end
 
     def self.destroy(event_id, token)
-      uri = delete_uri(event_id)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-      request = Net::HTTP::Delete.new(uri)
-      request.add_field('Authorization', "Bearer #{token}")
-      http.request(request)
+      http_client.delete(
+        delete_url(event_id),
+        { 'Authorization' => "Bearer #{token}" })
     end
 
     private
 
-    def self.delete_uri(event_id)
-      delete_url = base_url + "/" + event_id
-      URI(delete_url)
+    def self.http_client
+      http = Service.for(:http_client)
+      http.create('www.googleapis.com', 443)
+      http.use_ssl = true
+      http
     end
 
-    def self.base_uri
-      URI(base_url)
+    def self.delete_url(event_id)
+      base_url + "/" + event_id
     end
 
     def self.base_url
@@ -43,9 +40,25 @@ module CalendarService
     def self.event_body(day_off)
       date = day_off.date
       summary = summary(day_off.email, day_off.category)
+
+      if day_off.range.all_day?
+        all_day_event_body(date, summary)
+      else
+        part_day_event_body(date, summary, day_off.range)
+      end
+    end
+
+    def self.all_day_event_body(date, summary)
       JSON.generate({
         start: { date: date },
         end: { date: end_date(date) },
+        summary: summary })
+    end
+
+    def self.part_day_event_body(date, summary, range)
+      JSON.generate({
+        start: { dateTime: date + 'T' + range.start_time },
+        end: { dateTime: date + 'T' + range.end_time },
         summary: summary })
     end
 

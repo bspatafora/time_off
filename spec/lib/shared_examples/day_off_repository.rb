@@ -1,3 +1,4 @@
+require 'range'
 require 'repository_object/user'
 require 'repository_object/day_off'
 
@@ -16,13 +17,19 @@ shared_examples 'a day off repository' do
       @day_off_repository = described_class.new
       @user = RepositoryObject::User.new(email: 'user@email.com')
       user_repository.save(@user)
-      @date, @category, @event_id, @url = '2014-11-14', 'Holiday', '12345', 'day_off/link'
+
+      @date = '2014-11-14'
+      @range = Range.new(description: Range::ALL_DAY)
+      @category = 'Holiday'
+      @event_id = '3v3n71d'
+      @url = 'event/url'
     end
 
     it 'saves days off and returns a user’s days off' do
       day_off = RepositoryObject::DayOff.new(
         email: @user.email,
         date: @date,
+        range: @range,
         category: @category,
         event_id: @event_id,
         url: @url)
@@ -30,6 +37,7 @@ shared_examples 'a day off repository' do
 
       retrieved_day_off = @day_off_repository.find_by_email(@user.email).first
       expect(retrieved_day_off.date).to eq(@date)
+      expect(retrieved_day_off.range).to eq(@range)
       expect(retrieved_day_off.category).to eq(@category)
       expect(retrieved_day_off.event_id).to eq(@event_id)
       expect(retrieved_day_off.url).to eq(@url)
@@ -39,6 +47,7 @@ shared_examples 'a day off repository' do
       day_off = RepositoryObject::DayOff.new(
         email: @user.email,
         date: @date,
+        range: @range,
         category: @category,
         url: @url)
       @day_off_repository.save(day_off)
@@ -58,7 +67,10 @@ shared_examples 'a day off repository' do
 
     it 'destroys the day off with the specified event id' do
       email, event_id = 'user@email.com', '3v3n71d'
-      day_off = RepositoryObject::DayOff.new(email: @user.email, event_id: event_id)
+      day_off = RepositoryObject::DayOff.new(
+        email: @user.email,
+        event_id: event_id,
+        range: Range.new(description: Range::ALL_DAY))
       @day_off_repository.save(day_off)
 
       @day_off_repository.destroy_by_event_id(event_id)

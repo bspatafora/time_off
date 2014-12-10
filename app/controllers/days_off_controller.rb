@@ -12,6 +12,7 @@ class DaysOffController < ApplicationController
     Interactor::DayOff.create(
       email: session[:email],
       date: params[:date],
+      range: range(params),
       category: params[:category])
     redirect_to days_off_path
   end
@@ -27,5 +28,10 @@ class DaysOffController < ApplicationController
 
   def authenticate_user!
     redirect_to '/auth/google_oauth2' if !session[:email]
+  end
+
+  def range(params)
+    return 'all_day' if params['day-length'] == 'full_day'
+    params[:range]
   end
 end
