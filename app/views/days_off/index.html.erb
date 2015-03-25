@@ -40,6 +40,33 @@
   <div class="row top-buffer">
     <div class="col-md-8 col-md-offset-2 text-center">
       <table class="table">
+        <tr>
+          <th>Year</th>
+          <th>Flex Days Remaining</th>
+          <th>Holidays Remaining</th>
+        </tr>
+        <tr>
+          <td> <%= @remaining_count.previous_year %> </td>
+          <td> <%= @remaining_count.flex_days[0] %> </td>
+          <td> <%= @remaining_count.holidays[0] %> </td>
+        </tr>
+        <tr>
+          <td> <%= @remaining_count.current_year %> </td>
+          <td> <%= @remaining_count.flex_days[1] %> </td>
+          <td> <%= @remaining_count.holidays[1] %> </td>
+        </tr>
+        <tr>
+          <td> <%= @remaining_count.next_year %> </td>
+          <td> <%= @remaining_count.flex_days[2] %> </td>
+          <td> <%= @remaining_count.holidays[2] %> </td>
+        </tr>
+      </table>    
+    </div>
+  </div>
+
+  <div class="row top-buffer">
+    <div class="col-md-8 col-md-offset-2 text-center">
+      <table class="table">
         <% @days_off.list.each do |day_off| %>
           <tr>
             <td> <a href=<%= day_off.url %>><%= day_off.date %></a> </td>

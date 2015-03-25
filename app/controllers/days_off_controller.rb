@@ -1,11 +1,18 @@
 require 'interactor/day_off'
 require 'presenter/days_off'
+require 'presenter/remaining_count'
+require 'service'
 
 class DaysOffController < ApplicationController
   before_filter :authenticate_user!
 
   def index
-    @days_off = Presenter::DaysOff.new(Interactor::DayOff.all_for(session[:email]))
+    default_flex_days_remaining_in_2014 = 0
+    days_off = Interactor::DayOff.all_for(session[:email])
+    @days_off = Presenter::DaysOff.new(days_off)
+    @remaining_count = Presenter::RemainingCount.new(
+      days_off,
+      default_flex_days_remaining_in_2014)
   end
 
   def create
