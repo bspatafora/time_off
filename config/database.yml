@@ -6,12 +6,10 @@ default: &default
 development:
   <<: *default
   database: time_off_development
-  host: localhost
 
 test:
   <<: *default
   database: time_off_test
-  host: localhost
 
 production:
   url: <%= ENV['DATABASE_URL'] %>
