@@ -19,7 +19,7 @@ module ARRepository
     end
 
     def destroy_by_event_id(event_id)
-     day_off = DayOff.find_by(event_id: event_id) 
+     day_off = DayOff.find_by(event_id: event_id)
      day_off.destroy
     end
 

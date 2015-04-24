@@ -34,7 +34,7 @@ module HTTPClient
 
     def delete(url, headers)
       @received_delete_url = url
-      @received_delete_headers = headers 
+      @received_delete_headers = headers
     end
   end
 end

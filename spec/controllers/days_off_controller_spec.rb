@@ -37,7 +37,7 @@ describe DaysOffController, :type => :controller do
 
       it 'starts off creation of a day off with the passed parameters, then redirects to the day off URL' do
         allow(Interactor::DayOff).to receive(:create)
-        
+
         post :create,
           email: @email,
           date: @date,
@@ -53,7 +53,7 @@ describe DaysOffController, :type => :controller do
 
       it 'passes the interactor a range of “all_day” if the `day-length` param has a value of “full_day”' do
         allow(Interactor::DayOff).to receive(:create)
-        
+
         post :create,
           email: @email,
           date: @date,

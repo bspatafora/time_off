@@ -32,7 +32,7 @@ Rails.application.configure do
      :email_prefix         => "[Time Off error] ",
      :sender_address       => %{"Application Error" <no-reply@8thlight.com>},
      :exception_recipients => %w{bspatafora@8thlight.com}
-   } 
+   }
 
   config.i18n.fallbacks = true
 
