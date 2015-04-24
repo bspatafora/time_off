@@ -8,19 +8,19 @@ describe Presenter::RemainingCount do
     @allocated_holidays = 12
   end
 
-  describe '#current_year' do 
+  describe '#current_year' do
     it 'returns the current year' do
       expect(described_class.new([], @flex_days_remaining_in_2014).current_year).to eq(Time.now.year)
     end
   end
-  
-  describe '#next_year' do 
+
+  describe '#next_year' do
     it 'returns the next year' do
       expect(described_class.new([], @flex_days_remaining_in_2014).next_year).to eq(Time.now.year + 1)
     end
   end
 
-  describe '#previous_year' do 
+  describe '#previous_year' do
     it 'returns the previous year' do
       expect(described_class.new([], @flex_days_remaining_in_2014).previous_year).to eq(Time.now.year - 1)
     end
@@ -74,8 +74,8 @@ describe Presenter::RemainingCount do
 
       it 'returns the number of flex days remaining with a half day' do
         days_off = [RepositoryObject::DayOff.new(
-                      date: "#{@current_year}-12-10", 
-                      range: TimeRange.new(description: TimeRange::MORNING))]    
+                      date: "#{@current_year}-12-10",
+                      range: TimeRange.new(description: TimeRange::MORNING))]
 
         remaining_count = described_class.new(days_off, @flex_days_remaining_in_2014)
         expect(remaining_count.flex_days[0]).to eq(@flex_days_remaining_in_2014)
@@ -107,8 +107,8 @@ describe Presenter::RemainingCount do
 
       it 'returns the number of flex days remaining with a half day' do
         days_off = [RepositoryObject::DayOff.new(
-                      date: "#{@next_year}-12-10", 
-                      range: TimeRange.new(description: TimeRange::MORNING))]    
+                      date: "#{@next_year}-12-10",
+                      range: TimeRange.new(description: TimeRange::MORNING))]
 
         remaining_count = described_class.new(days_off, @flex_days_remaining_in_2014)
         expect(remaining_count.flex_days[0]).to eq(@flex_days_remaining_in_2014)
@@ -126,13 +126,13 @@ describe Presenter::RemainingCount do
 
       it 'returns the number of flex days remaining for each year' do
         days_off = [RepositoryObject::DayOff.new(
-                      date: "#{@current_year}-12-10", 
+                      date: "#{@current_year}-12-10",
                       range: TimeRange.new(description: TimeRange::ALL_DAY)),
                     RepositoryObject::DayOff.new(
-                      date: "#{@current_year}-12-11", 
+                      date: "#{@current_year}-12-11",
                       range: TimeRange.new(description: TimeRange::ALL_DAY)),
                     RepositoryObject::DayOff.new(
-                      date: "#{@next_year}-02-01", 
+                      date: "#{@next_year}-02-01",
                       range: TimeRange.new(description: TimeRange::ALL_DAY))]
 
         remaining_count = described_class.new(days_off, @flex_days_remaining_in_2014)
@@ -158,7 +158,7 @@ describe Presenter::RemainingCount do
                         range: TimeRange.new(description: TimeRange::ALL_DAY))
         end
         days_off << RepositoryObject::DayOff.new(
-                      date: "#{@current_calendar_year}-01-15", 
+                      date: "#{@current_calendar_year}-01-15",
                       range: TimeRange.new(description: TimeRange::ALL_DAY))
 
         remaining_count = described_class.new(days_off, @flex_days_remaining_in_2014)
@@ -175,7 +175,7 @@ describe Presenter::RemainingCount do
                         range: TimeRange.new(description: TimeRange::ALL_DAY))
         end
         days_off << RepositoryObject::DayOff.new(
-                      date: "#{@current_calendar_year}-01-15", 
+                      date: "#{@current_calendar_year}-01-15",
                       range: TimeRange.new(description: TimeRange::ALL_DAY))
 
         remaining_count = described_class.new(days_off, @flex_days_remaining_in_2014)
@@ -201,7 +201,7 @@ describe Presenter::RemainingCount do
                         range: TimeRange.new(description: TimeRange::ALL_DAY))
         end
         days_off << RepositoryObject::DayOff.new(
-                      date: "#{@current_calendar_year}-01-15", 
+                      date: "#{@current_calendar_year}-01-15",
                       range: TimeRange.new(description: TimeRange::ALL_DAY))
 
         remaining_count = described_class.new(days_off, @flex_days_remaining_in_2014)

@@ -51,7 +51,7 @@ module Presenter
       counts
     end
 
-    def holiday_count(days_off_in_year) 
+    def holiday_count(days_off_in_year)
       count = 0
       days_off_in_year.each do |day_off|
         count += day_off.range.time_value if day_off.category == 'Holiday'
@@ -99,7 +99,7 @@ module Presenter
     def day_off_within_january?(day_off, year)
       january_start = Date.parse("#{year}-01-01")
       january_end = Date.parse("#{year}-01-31")
-      
+
       day_off_within_range?(january_start, january_end, day_off)
     end
 
