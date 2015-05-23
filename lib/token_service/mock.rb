@@ -1,3 +1,5 @@
+require 'ostruct'
+
 module TokenService
   class Mock
     attr_reader :token, :token_expiration

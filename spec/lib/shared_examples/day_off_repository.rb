@@ -1,81 +1,56 @@
-require 'repository_object/user'
+require 'factory'
 require 'repository_object/day_off'
 require 'time_range'
 
 shared_examples 'a day off repository' do
-  before do
-    @day_off = RepositoryObject::DayOff
+  it 'returns a repository object with the day off data on save' do
+    day_off = Factory.day_off
+    returned_day_off = described_class.new.save(day_off)
+
+    expect(returned_day_off.id).not_to be_nil
+    expect(returned_day_off.user_id).to eq(day_off.user_id)
+    expect(returned_day_off.date).to eq(day_off.date)
+    expect(returned_day_off.range.description).to eq(day_off.range.description)
+    expect(returned_day_off.category).to eq(day_off.category)
+    expect(returned_day_off.event_id).to eq(day_off.event_id)
+    expect(returned_day_off.url).to eq(day_off.url)
   end
 
-  def user_repository
-    repository_name = described_class.name.split('::').first
-    eval(repository_name)::UserRepository.new
+  it 'finds by user id' do
+    day_off_repository = described_class.new
+    day_off = Factory.day_off
+    day_off_repository.save(day_off).user_id
+
+    retrieved_day_off = day_off_repository.find_by_user_id(day_off.user_id).first
+    expect(retrieved_day_off.id).not_to be_nil
+    expect(retrieved_day_off.date).to eq(day_off.date)
+    expect(retrieved_day_off.range.description).to eq(day_off.range.description)
+    expect(retrieved_day_off.category).to eq(day_off.category)
+    expect(retrieved_day_off.event_id).to eq(day_off.event_id)
+    expect(retrieved_day_off.url).to eq(day_off.url)
   end
 
-  describe '#save and #find_by_email' do
-    before(:each) do
-      @day_off_repository = described_class.new
-      @user = RepositoryObject::User.new(email: 'user@email.com')
-      user_repository.save(@user)
+  it 'finds by id' do
+    day_off_repository = described_class.new
+    day_off = Factory.day_off
+    id = day_off_repository.save(day_off).id
 
-      @date = '2014-11-14'
-      @range = TimeRange.new(description: TimeRange::ALL_DAY)
-      @category = 'Holiday'
-      @event_id = '3v3n71d'
-      @url = 'event/url'
-    end
-
-    it 'saves days off and returns a user’s days off' do
-      day_off = RepositoryObject::DayOff.new(
-        email: @user.email,
-        date: @date,
-        range: @range,
-        category: @category,
-        event_id: @event_id,
-        url: @url)
-      @day_off_repository.save(day_off)
-
-      retrieved_day_off = @day_off_repository.find_by_email(@user.email).first
-      expect(retrieved_day_off.date).to eq(@date)
-      expect(retrieved_day_off.range.description).to eq(@range.description)
-      expect(retrieved_day_off.category).to eq(@category)
-      expect(retrieved_day_off.event_id).to eq(@event_id)
-      expect(retrieved_day_off.url).to eq(@url)
-    end
-
-    it 'returns all of a user’s days off' do
-      day_off = RepositoryObject::DayOff.new(
-        email: @user.email,
-        date: @date,
-        range: @range,
-        category: @category,
-        url: @url)
-      @day_off_repository.save(day_off)
-      @day_off_repository.save(day_off)
-
-      retrieved_days_off = @day_off_repository.find_by_email(@user.email)
-      expect(retrieved_days_off.count).to eq(2)
-    end
+    retrieved_day_off = day_off_repository.find(id)
+    expect(retrieved_day_off.user_id).to eq(day_off.user_id)
+    expect(retrieved_day_off.date).to eq(day_off.date)
+    expect(retrieved_day_off.range.description).to eq(day_off.range.description)
+    expect(retrieved_day_off.category).to eq(day_off.category)
+    expect(retrieved_day_off.event_id).to eq(day_off.event_id)
+    expect(retrieved_day_off.url).to eq(day_off.url)
   end
 
-  describe '#destroy_by_event_id' do
-    before do
-      @day_off_repository = described_class.new
-      @user = RepositoryObject::User.new(email: 'user@email.com')
-      user_repository.save(@user)
-    end
+  it 'destroys days off by event id' do
+    day_off_repository = described_class.new
+    day_off = day_off_repository.save(Factory.day_off)
 
-    it 'destroys the day off with the specified event id' do
-      email, event_id = 'user@email.com', '3v3n71d'
-      day_off = RepositoryObject::DayOff.new(
-        email: @user.email,
-        event_id: event_id,
-        range: TimeRange.new(description: TimeRange::ALL_DAY))
-      @day_off_repository.save(day_off)
+    expect(day_off_repository.find_by_user_id(day_off.user_id).count).to eq(1)
+    day_off_repository.destroy_by_event_id(day_off.event_id)
 
-      @day_off_repository.destroy_by_event_id(event_id)
-      days_off_for_user = @day_off_repository.find_by_email(@user.email)
-      expect(days_off_for_user.count).to eq(0)
-    end
+    expect(day_off_repository.find_by_user_id(day_off.user_id).count).to eq(0)
   end
 end

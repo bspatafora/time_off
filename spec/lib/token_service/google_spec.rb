@@ -5,7 +5,7 @@ require 'token_service/google'
 describe TokenService::Google do
   before do
     @http_client = HTTPClient::Mock.new
-    Service.register(:http_client, @http_client)
+    Service.register(http_client: @http_client)
     @refresh_token = 'r3fr35h70k3n'
   end
 
