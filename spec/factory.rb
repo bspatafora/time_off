@@ -24,6 +24,6 @@ class Factory
   end
 
   def self.current_date
-    Time.now.to_s.split.first
+    Date.today
   end
 end

@@ -11,7 +11,7 @@ class DaysOffController < ApplicationController
   def create
     Interactor::DayOff.create(
       user_id: session[:user_id],
-      date: params[:date],
+      date: Date.parse(params[:date]),
       range: range(params),
       category: params[:category])
     redirect_to days_off_path
