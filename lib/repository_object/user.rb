@@ -1,9 +1,10 @@
 module RepositoryObject
   class User
     attr_reader :email, :refresh_token
-    attr_accessor :token, :token_expiration
+    attr_accessor :id, :token, :token_expiration
 
     def initialize(args)
+      @id = args[:id]
       @email = args[:email]
       @token = args[:token]
       @token_expiration = args[:token_expiration]

@@ -1,19 +1,19 @@
+require 'factory'
 require 'presenter/days_off'
-require 'repository_object/day_off'
 require 'time_range'
 
 describe Presenter::DaysOff do
   before do
-    @day_off_1 = RepositoryObject::DayOff.new(
+    @day_off_1 = Factory.day_off(
       date: '2014-11-17',
       range: TimeRange.new(description: TimeRange::ALL_DAY))
-    @day_off_2 = RepositoryObject::DayOff.new(
+    @day_off_2 = Factory.day_off(
       date: '2014-11-18',
       range: TimeRange.new(description: TimeRange::MORNING))
-    @day_off_3 = RepositoryObject::DayOff.new(
+    @day_off_3 = Factory.day_off(
       date: '2014-11-19',
       range: TimeRange.new(description: TimeRange::AFTERNOON))
-    @day_off_4 = RepositoryObject::DayOff.new(
+    @day_off_4 = Factory.day_off(
       date: '2014-11-20',
       range: TimeRange.new(description: TimeRange::LATE_AFTERNOON))
   end

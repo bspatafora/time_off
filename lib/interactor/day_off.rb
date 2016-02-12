@@ -4,32 +4,37 @@ require 'time_range_factory'
 
 module Interactor
   class DayOff
-    def self.all_for(email)
-      day_off_repository.find_by_email(email)
+    def self.all_for(user_id)
+      day_off_repository.find_by_user_id(user_id)
     end
 
     def self.create(args)
       day_off = RepositoryObject::DayOff.new(
-        email: args[:email],
+        user_id: args[:user_id],
         date: args[:date],
         range: TimeRangeFactory.build(args[:range]),
-        category: args[:category])
-      event = calendar_service.create(day_off, token_for(args[:email]))
+        category: args[:category]
+      )
+
+      event = calendar_service.create(day_off, token_for(args[:user_id]))
       day_off.event_id = event.event_id
       day_off.url = event.url
+
       day_off_repository.save(day_off)
     end
 
-    def self.destroy(event_id, email)
-      day_off_repository.destroy_by_event_id(event_id)
-      calendar_service.destroy(event_id, token_for(email))
+    def self.destroy(id)
+      day_off = day_off_repository.find(id)
+      user_id = day_off.user_id
+
+      day_off_repository.destroy_by_event_id(day_off.event_id)
+      calendar_service.destroy(day_off.event_id, token_for(user_id))
     end
 
     private
 
-    def self.token_for(email)
-      user = user_repository.find_by_email(email)
-      update_token(user)
+    def self.token_for(user_id)
+      update_token(user_repository.find(user_id))
     end
 
     def self.update_token(user)

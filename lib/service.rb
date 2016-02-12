@@ -1,13 +1,13 @@
 class Service
-  def self.register(type, service)
-    services[type] = service
+  def self.register(services)
+    registered_services.merge!(services)
   end
 
-  def self.services
-    @services ||= {}
+  def self.registered_services
+    @registered_services ||= {}
   end
 
   def self.for(type)
-    services[type]
+    registered_services[type]
   end
 end

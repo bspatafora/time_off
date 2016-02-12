@@ -1,10 +1,11 @@
 module RepositoryObject
   class DayOff
-    attr_reader :email, :date, :range, :category, :event_id, :url
-    attr_writer :event_id, :url
+    attr_reader :id, :user_id, :date, :range, :category, :event_id, :url
+    attr_writer :id, :event_id, :url
 
     def initialize(args)
-      @email = args[:email]
+      @id = args[:id]
+      @user_id = args[:user_id]
       @date = args[:date]
       @range = args[:range]
       @category = args[:category]

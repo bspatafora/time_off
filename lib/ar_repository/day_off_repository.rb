@@ -4,35 +4,42 @@ require 'repository_object/day_off'
 module ARRepository
   class DayOffRepository
     def save(object)
-      DayOff.create(
-        user_id: User.select('id').where(email: object.email).first.id,
+      day_off = DayOff.create(
+        user_id: object.user_id,
         date: object.date,
         range: object.range.description,
         category: object.category,
         event_id: object.event_id,
-        url: object.url)
+        url: object.url
+      )
+
+      repository_object(day_off)
     end
 
-    def find_by_email(email)
-      days_off = DayOff.joins(:user).where(users: { email: email })
-      days_off.map { |day_off| to_domain_object(day_off, email) }
+    def find_by_user_id(user_id)
+      DayOff.where(user_id: user_id).map { |day_off| repository_object(day_off) }
+    end
+
+    def find(id)
+      repository_object(DayOff.find(id))
     end
 
     def destroy_by_event_id(event_id)
-     day_off = DayOff.find_by(event_id: event_id)
-     day_off.destroy
+      DayOff.find_by(event_id: event_id).destroy
     end
 
     private
 
-    def to_domain_object(day_off, email)
+    def repository_object(day_off)
       RepositoryObject::DayOff.new(
-        email: email,
+        id: day_off.id,
+        user_id: day_off.user_id,
         date: day_off.date,
         range: TimeRangeFactory.build(day_off.range),
         category: day_off.category,
         event_id: day_off.event_id,
-        url: day_off.url)
+        url: day_off.url
+      )
     end
   end
 end

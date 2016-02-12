@@ -48,7 +48,7 @@
             <td>
               <%= button_to "Remove", days_off_path,
                 method: :delete,
-                params: { event_id: day_off.event_id },
+                params: { id: day_off.id },
                 data: { confirm: "Are you sure you want to delete the day off on #{day_off.date}?" },
                 class: 'btn btn-danger btn-xs' %>
             </td>

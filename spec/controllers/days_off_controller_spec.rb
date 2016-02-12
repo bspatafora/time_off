@@ -1,98 +1,110 @@
+require 'calendar_service/mock'
+require 'factory'
 require 'interactor/day_off'
+require 'memory_repository/day_off_repository'
+require 'memory_repository/user_repository'
 require 'presenter/days_off'
 require 'rails_helper'
+require 'token_service/mock'
 
 describe DaysOffController, :type => :controller do
-  describe '#index' do
-    context 'when user is logged in' do
-      it 'sets @days_off, then renders index' do
-        email = 'user@email.com'
-        session[:email] = email
-        allow(Interactor::DayOff).to receive(:all_for)
+  before(:each) do
+    Service.register(
+      day_off_repository: MemoryRepository::DayOffRepository.new,
+      user_repository: MemoryRepository::UserRepository.new,
+      calendar: CalendarService::Mock.new,
+      token: TokenService::Mock.new
+    )
+  end
 
-        get :index
-        expect(Interactor::DayOff).to have_received(:all_for).with(email)
-        expect(assigns(:days_off)).to be_a(Presenter::DaysOff)
-        expect(response).to render_template(:index)
-      end
+  describe 'days off index' do
+    it 'returns the user’s days off' do
+      user = Service.for(:user_repository).save(Factory.user)
+      day_off = Service.for(:day_off_repository).save(Factory.day_off(user_id: user.id))
+      session[:user_id] = user.id
+
+      get :index
+
+      days_off = assigns(:days_off).list
+      expect(days_off.count).to eq(1)
+      expect(days_off.first).to eq(day_off)
     end
 
-    context 'when user is not logged in' do
-      it 'redirects to the authentication URL' do
+    it 'renders the index' do
+      user = Service.for(:user_repository).save(Factory.user)
+      session[:user_id] = user.id
+
+      get :index
+
+      expect(response).to render_template(:index)
+    end
+
+    context 'when no user is signed in' do
+      it 'redirects to the sign in page' do
         get :index
+
         expect(response).to redirect_to('/auth/google_oauth2')
       end
     end
   end
 
-  describe '#create' do
-    context 'when user is logged in' do
-      before do
-        @email = 'user@email.com'
-        @date = '2014-12-04'
-        @range = 'morning'
-        @category = 'Vacation'
-        session[:email] = @email
-      end
+  describe 'day off creation' do
+    it 'adds the day off to the repository and the calendar service' do
+      user = Service.for(:user_repository).save(Factory.user)
+      day_off = Factory.day_off(user_id: user.id)
+      session[:user_id] = user.id
 
-      it 'starts off creation of a day off with the passed parameters, then redirects to the day off URL' do
-        allow(Interactor::DayOff).to receive(:create)
+      post :create,
+        date: day_off.date,
+        range: day_off.range.description,
+        category: day_off.category
 
-        post :create,
-          email: @email,
-          date: @date,
-          range: @range,
-          category: @category
-        expect(Interactor::DayOff).to have_received(:create).with(
-          email: @email,
-          date: @date,
-          range: @range,
-          category: @category)
-        expect(response).to redirect_to(days_off_path)
-      end
-
-      it 'passes the interactor a range of “all_day” if the `day-length` param has a value of “full_day”' do
-        allow(Interactor::DayOff).to receive(:create)
-
-        post :create,
-          email: @email,
-          date: @date,
-          'day-length' => 'full_day',
-          range: @range,
-          category: @category
-        expect(Interactor::DayOff).to have_received(:create).with(
-          email: @email,
-          date: @date,
-          range: 'all_day',
-          category: @category)
-        expect(response).to redirect_to(days_off_path)
-      end
+      retrieved_day_off = Service.for(:day_off_repository).find_by_user_id(user.id).first
+      expect(retrieved_day_off.date).to eq(day_off.date)
+      expect(retrieved_day_off.range.description).to eq(day_off.range.description)
+      expect(retrieved_day_off.category).to eq(day_off.category)
+      expect(Service.for(:calendar).added_events.count).to eq(1)
     end
 
-    context 'when user is not logged in' do
-      it 'redirects to the authentication URL' do
+    it 'stores a range of all_day when passed a day-length of full_day' do
+      user = Service.for(:user_repository).save(Factory.user)
+      day_off = Factory.day_off(user_id: user.id)
+      session[:user_id] = user.id
+
+      post :create,
+        date: day_off.date,
+        range: day_off.range,
+        'day-length' => 'full_day',
+        category: day_off.category
+
+      retrieved_day_off = Service.for(:day_off_repository).find_by_user_id(user.id).first
+      expect(retrieved_day_off.range.description).to eq('all_day')
+    end
+
+    context 'when no user is signed in' do
+      it 'redirects to the sign in page' do
         post :create
+
         expect(response).to redirect_to('/auth/google_oauth2')
       end
     end
   end
 
-  describe '#destroy' do
-    context 'when user is logged in' do
-      it 'starts off destruction of the day off with the specified ID, then redirects to the day off URL' do
-        email, event_id = 'user@email.com', '3v3n71d'
-        session[:email] = email
-        allow(Interactor::DayOff).to receive(:destroy)
+  describe 'destroying a day off' do
+    it 'removes the day off from the repository and the calendar service' do
+      user = Service.for(:user_repository).save(Factory.user)
+      day_off = Service.for(:day_off_repository).save(Factory.day_off(user_id: user.id))
+      session[:user_id] = user.id
 
-        delete :destroy, event_id: event_id
-        expect(Interactor::DayOff).to have_received(:destroy).with(event_id, email)
-        expect(response).to redirect_to(days_off_path)
-      end
+      delete :destroy, id: day_off.id
+
+      expect(Service.for(:day_off_repository).find_by_user_id(user.id).count).to eq(0)
     end
 
-    context 'when user is not logged in' do
-      it 'redirects to the authentication URL' do
+    context 'when no user is signed in' do
+      it 'redirects to the sign in page' do
         delete :destroy
+
         expect(response).to redirect_to('/auth/google_oauth2')
       end
     end

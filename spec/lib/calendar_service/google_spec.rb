@@ -1,23 +1,29 @@
 require 'calendar_service/google'
+require 'factory'
 require 'http_client/mock'
-require 'repository_object/day_off'
 require 'service'
 require 'time_range'
 
 describe CalendarService::Google do
   before do
     @http_client = HTTPClient::Mock.new
-    Service.register(:http_client, @http_client)
+    Service.register(http_client: @http_client)
     @token = '70k3n'
   end
 
   describe '#create' do
     before do
-      @day_off = RepositoryObject::DayOff.new(
-        email: 'user@email.com',
+      Service.register(user_repository: MemoryRepository::UserRepository.new)
+      @user = Factory.user(email: 'user@email.com')
+
+      Service.for(:user_repository).save(@user)
+
+      @day_off = Factory.day_off(
+        user_id: @user.id,
         date: '2014-12-08',
         range: TimeRange.new(description: TimeRange::ALL_DAY),
-        category: 'Vacation')
+        category: 'Vacation'
+      )
     end
 
     it 'creates a new HTTP client with the correct host and port' do
@@ -48,14 +54,16 @@ describe CalendarService::Google do
 
     context 'when creating a part-day event' do
       it 'makes a POST request with the correct parameters' do
-        partial_day_off = RepositoryObject::DayOff.new(
-          email: 'user@email.com',
+        partial_day_off = Factory.day_off(
+          user_id: @user.id,
           date: '2014-12-09',
           range: TimeRange.new(
             description: TimeRange::MORNING,
             start_time: '09:00:00',
-            end_time: '13:00:00'),
-          category: 'Sick')
+            end_time: '13:00:00'
+          ),
+          category: 'Sick'
+        )
         described_class.create(partial_day_off, @token)
 
         expect(@http_client.received_post_url).to match(

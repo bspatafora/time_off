@@ -38,8 +38,9 @@ module CalendarService
     end
 
     def self.event_body(day_off)
+      email = Service.for(:user_repository).find(day_off.user_id).email
       date = day_off.date
-      summary = summary(day_off.email, day_off.category)
+      summary = summary(email, day_off.category)
 
       if day_off.range.all_day?
         all_day_event_body(date, summary)

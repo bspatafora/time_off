@@ -3,17 +3,16 @@ require 'repository_object/user'
 
 class SessionsController < ApplicationController
   def create
-    auth_hash = request.env['omniauth.auth']
-
+    authentication = request.env['omniauth.auth']
     user = RepositoryObject::User.new(
-      email: auth_hash[:info][:email],
-      token: auth_hash[:credentials][:token],
-      token_expiration: auth_hash[:credentials][:expires_at],
-      refresh_token: auth_hash[:credentials][:refresh_token])
-    Service.for(:user_repository).save(user)
+      email: authentication[:info][:email],
+      token: authentication[:credentials][:token],
+      token_expiration: authentication[:credentials][:expires_at],
+      refresh_token: authentication[:credentials][:refresh_token]
+    )
 
-    session[:email] = auth_hash[:info][:email]
-
+    user = Service.for(:user_repository).save(user)
+    session[:user_id] = user.id
     redirect_to days_off_path
   end
 end
